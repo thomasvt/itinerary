@@ -53,6 +53,7 @@
     <Compile Include="DiffTreeBuilder.cs" />
     <Compile Include="DiffTree\DiffNode.cs" />
     <Compile Include="DiffTree\DiffTree.cs" />
+    <Compile Include="FileUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Report\ReportBuilder.cs" />

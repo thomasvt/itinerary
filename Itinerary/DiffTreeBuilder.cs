@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Itinerary.DiffTree;
 
 namespace Itinerary
 {
-    internal static class DiffTreeBuilder
+    internal class DiffTreeBuilder
     {
-        public static string[] IgnoreFolders = { "bin", "obj" };
+        public DiffTreeBuilder()
+        {
+            IgnoreFolders = new List<string>();
+        }
 
-        public static DiffTree.DiffTree ProcessFolderPair(string leftFolder, string rightFolder)
+        public DiffTree.DiffTree BuildDiffTree(string leftFolder, string rightFolder)
         {
             var nodes = GetNodesForFolderPair(leftFolder, rightFolder);
             return new DiffTree.DiffTree(nodes);
         }
 
-        private static List<DiffNode> GetNodesForFolderPair(string leftFolder, string rightFolder)
+        private List<DiffNode> GetNodesForFolderPair(string leftFolder, string rightFolder)
         {
             var nodes = new List<DiffNode>();
             AddFolderNodes(leftFolder, rightFolder, nodes);
@@ -25,7 +27,7 @@ namespace Itinerary
             return nodes;
         }
 
-        private static void AddFolderNodes(string leftFolder, string rightFolder, List<DiffNode> nodes)
+        private void AddFolderNodes(string leftFolder, string rightFolder, List<DiffNode> nodes)
         {
             var leftList = leftFolder != null ? GetSubFolders(leftFolder) : new List<string>();
             var rightList = rightFolder != null ? GetSubFolders(rightFolder) : new List<string>();
@@ -56,37 +58,19 @@ namespace Itinerary
                 });
         }
 
-        private static void AddFileNodes(string leftFolder, string rightFolder, List<DiffNode> nodes)
+        private void AddFileNodes(string leftFolder, string rightFolder, List<DiffNode> nodes)
         {
             var leftFileList = leftFolder != null ? GetFiles(leftFolder) : new List<string>();
             var rightFileList = rightFolder != null ? GetFiles(rightFolder) : new List<string>();
             TwoWayCompare(leftFileList, rightFileList,
                 remainedFile =>
                 {
-                    var areEqual = FilesAreEqual(Path.Combine(leftFolder, remainedFile), Path.Combine(rightFolder, remainedFile));
+                    var areEqual = FileUtils.FileContentsAreEqual(Path.Combine(leftFolder, remainedFile), Path.Combine(rightFolder, remainedFile));
                     nodes.Add(new DiffNode(remainedFile, ObjectType.File, areEqual ? ChangeType.Unmodified : ChangeType.Modified));
                 },
                 removedFile => nodes.Add(new DiffNode(removedFile, ObjectType.File, ChangeType.Removed)),
                 addedFile => nodes.Add(new DiffNode(addedFile, ObjectType.File, ChangeType.Added))
             );
-        }
-
-        private static bool FilesAreEqual(string fileA, string fileB)
-        {
-            if (new FileInfo(fileA).Length != new FileInfo(fileB).Length)
-                return false;
-            var checksumA = GetChecksum(fileA);
-            var checksumB = GetChecksum(fileB);
-            return checksumA.SequenceEqual(checksumB);
-        }
-
-        private static byte[] GetChecksum(string filename)
-        {
-            using (var stream = File.OpenRead(filename))
-            {
-                var sha = new SHA256Managed();
-                return sha.ComputeHash(stream);
-            }
         }
 
         /// <summary>
@@ -122,7 +106,7 @@ namespace Itinerary
             }
         }
 
-        private static List<string> GetSubFolders(string rootFolder)
+        private List<string> GetSubFolders(string rootFolder)
         {
             return Directory.GetDirectories(rootFolder)
                 .Select(Path.GetFileName)
@@ -140,5 +124,7 @@ namespace Itinerary
                 .OrderBy(n => n, StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
         }
+
+        public List<string> IgnoreFolders { get; set; }
     }
 }

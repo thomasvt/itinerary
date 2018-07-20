@@ -7,6 +7,13 @@ namespace Itinerary
 {
     public static class CmdLnOptions
     {
+        private static readonly string[] IgnoreFoldersDefault = { "bin", "obj", "packages" };
+
+        static CmdLnOptions()
+        {
+            IgnoreFolders = new List<string>();
+        }
+
         public static bool Parse(string[] args)
         {
             try
@@ -30,15 +37,33 @@ namespace Itinerary
         private static void ParseOptions(string[] args)
         {
             var options = args.Where(a => a.StartsWith("-")).ToList();
-            if (options.Contains("-a"))
-            {
-                options.Remove("-a");
-                ChangesOnly = true;
-            }
+            ParseOption(options, "-a", o => ChangesOnly = true);
+            ParseOption(options, "-i=", 
+                o => IgnoreFolders.AddRange(o.Substring(3).Split(',')),
+                () => IgnoreFolders.AddRange(IgnoreFoldersDefault));
 
             if (options.Any())
             {
                 throw new CmdLnException("Unknown command line option(s): " + string.Join(" ", options));
+            }
+        }
+
+        /// <param name="matchAction">invoked EACH time the optionPrefix matches!</param>
+        /// <param name="noMatchAction">invokes if no option matches the optionPrefix</param>
+        private static void ParseOption(ICollection<string> options, string optionPrefix, Action<string> matchAction, Action noMatchAction = null)
+        {
+            var matchingOptions = options.Where(o => o.StartsWith(optionPrefix)).ToList();
+            var hasMatch = false;
+            foreach (var matchingOption in matchingOptions)
+            {
+                matchAction(matchingOption);
+                options.Remove(matchingOption);
+                hasMatch = true;
+            }
+
+            if (!hasMatch)
+            {
+                noMatchAction?.Invoke();
             }
         }
 
@@ -68,10 +93,12 @@ namespace Itinerary
             Console.WriteLine("   Generates a delta document for each linkpair in the chain of paths.");
             Console.WriteLine();
             Console.WriteLine("Options:");
-            Console.WriteLine("-a       List all objects (instead of only the changed ones)");
+            Console.WriteLine("-a           List all objects (instead of only the changed ones)");
+            Console.WriteLine("-i=a,b,...   Ignore list for folders (default: -i=bin,obj,packages)");
         }
 
         public static bool ChangesOnly { get; private set; }
         public static List<string> Paths { get; private set; }
+        public static List<string> IgnoreFolders { get; }
     }
 }

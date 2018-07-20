@@ -62,7 +62,11 @@ namespace Itinerary
 
         private static void BuildReportForFolderPair(string leftFolder, string rightFolder)
         {
-            var tree = DiffTreeBuilder.ProcessFolderPair(leftFolder, rightFolder);
+            var diffTreeBuilder = new DiffTreeBuilder
+            {
+                IgnoreFolders = CmdLnOptions.IgnoreFolders
+            };
+            var tree = diffTreeBuilder.BuildDiffTree(leftFolder, rightFolder);
             var filename = rightFolder + ".html";
             ReportBuilder.BuildReport(tree, filename);
             Console.WriteLine("Created " + filename);
