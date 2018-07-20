@@ -1,11 +1,11 @@
 # itinerary
 
-## What is does for you
+## What Itinerary does for you
 Itinerary is a tool that uses Roslyn to help you make C# courses from steps automatically extracted from the version history of a source repository. "Add method x here", "Insert statement x between y and z", etc. You can then use those migration steps as a skeleton for your course.
 
 Of course, Itinerary can't do magic: writing quality courses still require work. It's up to you to have clean increments per version in your source repo, and to write decent explanations based on the generated migrations.
 
-## How it works
+## How Itinerary works
 I use it with git, but it works on folders, so it's VCS agnostic. Just get your different versions of the source in a bunch of separate folders and allow Itinerary to detect the changes.
 
 As example, here's how I work:
