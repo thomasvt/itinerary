@@ -2,19 +2,19 @@
 
 namespace Itinerary.DiffTree
 {
-    public class DiffNode
+    public class DiffTreeNode
     {
-        public DiffNode(string name, ObjectType objectType, ChangeType changeType)
+        public DiffTreeNode(string name, ObjectType objectType, ChangeType changeType)
         {
             Name = name;
             ObjectType = objectType;
             ChangeType = changeType;
-            ChildNodes = new List<DiffNode>();
+            ChildNodes = new List<DiffTreeNode>();
         }
 
         public string Name { get; }
         public ObjectType ObjectType { get; }
-        public IReadOnlyList<DiffNode> ChildNodes { get; internal set; }
+        public IReadOnlyList<DiffTreeNode> ChildNodes { get; internal set; }
         public ChangeType ChangeType { get; }
     }
 }

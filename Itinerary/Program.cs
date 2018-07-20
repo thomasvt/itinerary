@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Itinerary.CSharp;
+using Itinerary.DiffTreeBuidling;
 using Itinerary.Report;
 
 namespace Itinerary
@@ -62,14 +64,21 @@ namespace Itinerary
 
         private static void BuildReportForFolderPair(string leftFolder, string rightFolder)
         {
-            var diffTreeBuilder = new DiffTreeBuilder
-            {
-                IgnoreFolders = CmdLnOptions.IgnoreFolders
-            };
+            var diffTreeBuilder = CreateDiffTreeBuilder();
             var tree = diffTreeBuilder.BuildDiffTree(leftFolder, rightFolder);
             var filename = rightFolder + ".html";
             ReportBuilder.BuildReport(tree, filename);
             Console.WriteLine("Created " + filename);
+        }
+
+        private static DiffTreeBuilder CreateDiffTreeBuilder()
+        {
+            var diffTreeBuilder = new DiffTreeBuilder
+            {
+                IgnoreFolders = CmdLnOptions.IgnoreFolders,
+            };
+            diffTreeBuilder.RegisterFileContentComparer(new CSharpFileContentComparer());
+            return diffTreeBuilder;
         }
     }
 }

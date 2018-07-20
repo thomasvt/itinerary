@@ -21,7 +21,7 @@ namespace Itinerary.Report
             doc.Save(File.Open(filename, FileMode.Create));
         }
 
-        private static void AddNodesToHtmlDoc(IEnumerable<DiffNode> nodes, HtmlNode parentNode)
+        private static void AddNodesToHtmlDoc(IEnumerable<DiffTreeNode> nodes, HtmlNode parentNode)
         {
             var ulNode = parentNode.AppendChild(HtmlNode.CreateNode("<ul style=\"list-style-type: none; -webkit-padding-start: 20px;\">"));
             foreach (var node in nodes)
@@ -36,7 +36,7 @@ namespace Itinerary.Report
             }
         }
 
-        private static string GetObjectTypeIcon(DiffNode node)
+        private static string GetObjectTypeIcon(DiffTreeNode node)
         {
             return node.ObjectType == ObjectType.Directory 
                 ? "<i class=\"fas fa-folder-open\" style=\"color: #F8D96E;\"></i>"

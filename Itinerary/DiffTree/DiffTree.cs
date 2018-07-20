@@ -4,11 +4,11 @@ namespace Itinerary.DiffTree
 {
     public class DiffTree
     {
-        internal DiffTree(List<DiffNode> nodes)
+        internal DiffTree(List<DiffTreeNode> nodes)
         {
             Nodes = nodes;
         }
 
-        public List<DiffNode> Nodes { get; }
+        public List<DiffTreeNode> Nodes { get; }
     }
 }

@@ -7,7 +7,7 @@ namespace Itinerary
 {
     public static class CmdLnOptions
     {
-        private static readonly string[] IgnoreFoldersDefault = { "bin", "obj", "packages" };
+        private static readonly string[] IgnoreFoldersDefault = { "bin", "obj", "packages", "properties" };
 
         static CmdLnOptions()
         {
@@ -20,6 +20,11 @@ namespace Itinerary
             {
                 ParseOptions(args);
                 ParsePaths(args);
+                if (Help)
+                {
+                    ShowHelp();
+                    return false;
+                }
                 return true;
             }
             catch (CmdLnException e)
@@ -38,6 +43,7 @@ namespace Itinerary
         {
             var options = args.Where(a => a.StartsWith("-")).ToList();
             ParseOption(options, "-a", o => ChangesOnly = true);
+            ParseOption(options, "-h", o => Help = true);
             ParseOption(options, "-i=", 
                 o => IgnoreFolders.AddRange(o.Substring(3).Split(',')),
                 () => IgnoreFolders.AddRange(IgnoreFoldersDefault));
@@ -93,10 +99,13 @@ namespace Itinerary
             Console.WriteLine("   Generates a delta document for each linkpair in the chain of paths.");
             Console.WriteLine();
             Console.WriteLine("Options:");
+            Console.WriteLine("-h           Shows this help text");
             Console.WriteLine("-a           List all objects (instead of only the changed ones)");
-            Console.WriteLine("-i=a,b,...   Ignore list for folders (default: -i=bin,obj,packages)");
+            Console.WriteLine("-i=a,b,...   Ignore list for folders");
+            Console.WriteLine("             Default: -i=" + string.Join(",", IgnoreFoldersDefault));
         }
 
+        public static bool Help { get; private set; }
         public static bool ChangesOnly { get; private set; }
         public static List<string> Paths { get; private set; }
         public static List<string> IgnoreFolders { get; }

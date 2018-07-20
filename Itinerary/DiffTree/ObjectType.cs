@@ -3,6 +3,8 @@
     public enum ObjectType
     {
         File,
-        Directory
+        Directory,
+        Message,
+        Other
     }
 }
