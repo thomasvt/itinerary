@@ -14,7 +14,7 @@ namespace Itinerary.DiffTree
 
         public string Name { get; }
         public ObjectType ObjectType { get; }
-        public List<DiffNode> ChildNodes { get; internal set; }
+        public IReadOnlyList<DiffNode> ChildNodes { get; internal set; }
         public ChangeType ChangeType { get; }
     }
 }

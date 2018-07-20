@@ -32,9 +32,15 @@ namespace Itinerary
             TwoWayCompare(leftList, rightList,
                 remainedFolder =>
                 {
-                    var node = new DiffNode(remainedFolder, ObjectType.Directory, ChangeType.Unmodified);
+                    var childNodes = GetNodesForFolderPair(Path.Combine(leftFolder, remainedFolder), Path.Combine(rightFolder, remainedFolder));
+                    var changeType = childNodes.Any(n => n.ChangeType != ChangeType.Unmodified)
+                        ? ChangeType.Modified
+                        : ChangeType.Unmodified;
+                    var node = new DiffNode(remainedFolder, ObjectType.Directory, changeType)
+                    {
+                        ChildNodes = childNodes.AsReadOnly()
+                    };
                     nodes.Add(node);
-                    node.ChildNodes = GetNodesForFolderPair(Path.Combine(leftFolder, remainedFolder), Path.Combine(rightFolder, remainedFolder));
                 },
                 removedFolder =>
                 {

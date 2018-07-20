@@ -16,18 +16,19 @@ namespace Itinerary.Report
             headNode.AppendChild(HtmlNode.CreateNode(
                 "<link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.1.1/css/all.css\" integrity=\"sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ\" crossorigin=\"anonymous\">"));
             var bodyNode =
-                htmlNode.AppendChild(HtmlNode.CreateNode("<body style=\"font-family: Arial, Helvetica, sans-serif;\">"));
+                htmlNode.AppendChild(HtmlNode.CreateNode("<body style=\"font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;\">"));
             AddNodesToHtmlDoc(tree.Nodes, bodyNode);
             doc.Save(File.Open(filename, FileMode.Create));
         }
 
-        private static void AddNodesToHtmlDoc(List<DiffNode> nodes, HtmlNode parentNode)
+        private static void AddNodesToHtmlDoc(IEnumerable<DiffNode> nodes, HtmlNode parentNode)
         {
-            var ulNode = parentNode.AppendChild(HtmlNode.CreateNode("<ul>"));
+            var ulNode = parentNode.AppendChild(HtmlNode.CreateNode("<ul style=\"list-style-type: none; -webkit-padding-start: 20px;\">"));
             foreach (var node in nodes)
             {
-                var fileSign = node.ObjectType == ObjectType.Directory ? "<i class=\"fas fa-folder-open\" style=\"color: #FCE181;\"></i>" : "<i class=\"fas fa-file\" style=\"color: #909292;\"></i>";
-                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{GetCompareSign(node.ChangeType)} {fileSign} {node.Name}</li>"));
+                var objectTypeIcon = GetObjectTypeIcon(node);
+                var changeTypeIcon = GetChangeTypeIcon(node.ChangeType);
+                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{GetChangeTypeIcon(node.ChangeType)}&nbsp; &nbsp;{objectTypeIcon} {node.Name}</li>"));
                 if (node.ChildNodes.Any())
                 {
                     AddNodesToHtmlDoc(node.ChildNodes, liNode);
@@ -35,18 +36,25 @@ namespace Itinerary.Report
             }
         }
 
-        private static string GetCompareSign(ChangeType changeType)
+        private static string GetObjectTypeIcon(DiffNode node)
+        {
+            return node.ObjectType == ObjectType.Directory 
+                ? "<i class=\"fas fa-folder-open\" style=\"color: #F8D96E;\"></i>"
+                : "<i class=\"fas fa-file\" style=\"color: #909292;\"></i>";
+        }
+
+        private static string GetChangeTypeIcon(ChangeType changeType)
         {
             switch (changeType)
             {
                 case ChangeType.Unmodified:
-                    return "=";
+                    return "<i class=\"fas fa-equals\" title=\"unmodified\"></i>";
                 case ChangeType.Modified:
-                    return "!=";
+                    return "<i class=\"fas fa-not-equal\" style=\"color: #F9A825;\" title=\"modified\"></i>";
                 case ChangeType.Added:
-                    return "+";
+                    return "<i class=\"fas fa-asterisk\" style=\"color: #558B2F;\" title=\"added\"></i>";
                 case ChangeType.Removed:
-                    return "-";
+                    return "<i class=\"fas fa-trash\" style=\"color: #c62828;\" title=\"removed\"></i>";
             }
             return "?";
         }
