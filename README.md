@@ -12,4 +12,4 @@ I use it with git (but it works on folders so it's VCS agnostic):
 
 I separate my course into functional increments/steps (like in TDD, actually). I write the code in that order and commit to git as normal. For each functional increment i add another branch. So, you end up with a sequence of branches pointing to the different steps you wish to teach in the course.
 
-Using branches is important so you can always add corrections to any step should you find a bug that you need to fix (don't forget to merge forward all the way). When all steps are course-ready, you extract each of them to a separate folder and let Itinerary detect migrations between them.
+Using branches is important so you can always add corrections to an earlier step later on. When all steps are course-ready, you extract each of them to a separate folder and let Itinerary detect migrations between them.
