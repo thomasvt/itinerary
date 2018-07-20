@@ -20,6 +20,7 @@ namespace Itinerary
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("CommandLine error:");
                 Console.WriteLine(e.Message);
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
                 ShowHelp();
                 return false;
@@ -59,13 +60,15 @@ namespace Itinerary
 
         public static void ShowHelp()
         {
-            Console.WriteLine("ITINERARY [-a] path");
+            Console.WriteLine("Usages:");
+            Console.WriteLine("ITINERARY [options] path");
             Console.WriteLine("   Generates a delta document for all subfolders of path.");
             Console.WriteLine();
-            Console.WriteLine("ITINERARY [-a] path1 path2 ...");
+            Console.WriteLine("ITINERARY [options] path1 path2 ...");
             Console.WriteLine("   Generates a delta document for each linkpair in the chain of paths.");
             Console.WriteLine();
-            Console.WriteLine("-a       List all objects (not only the changed ones)");
+            Console.WriteLine("Options:");
+            Console.WriteLine("-a       List all objects (instead of only the changed ones)");
         }
 
         public static bool ChangesOnly { get; private set; }
