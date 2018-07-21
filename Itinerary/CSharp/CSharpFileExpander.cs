@@ -1,23 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Itinerary.Comparing;
 using Itinerary.DiffTree;
-using Itinerary.DiffTreeBuidling;
+using Itinerary.DiffTreeBuilding;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Itinerary.CSharp
 {
-    public class CSharpFileContentComparer
-    : IFileContentComparer
+    public class CSharpFileExpander
+    : IDiffTreeNodeExpander
     {
-        public string FileExtension => ".cs";
+        private const string FileExtension = ".cs";
 
         public List<DiffTreeNode> Parse(string leftFilename, string rightFilename)
         {
             var leftTree = GetSemanticTree(leftFilename);
             var rightTree = GetSemanticTree(rightFilename);
             return GetDiffTree(leftTree, rightTree).ToList();
+        }
+
+        public bool CanExpand(DiffTreeNode node)
+        {
+            return node.ObjectType == ObjectType.File && Path.GetExtension(node.Name) == FileExtension;
+        }
+
+        public void Expand(DiffTreeNode node)
+        {
+            //throw new System.NotImplementedException();
         }
 
         private static List<CodeNode> GetSemanticTree(string leftFilename)
@@ -28,7 +37,7 @@ namespace Itinerary.CSharp
 
         private static DiffTreeNode GetDiffTreeNode(CodeNode codeNode)
         {
-            return new DiffTreeNode($"{codeNode.Label} {codeNode.Source}", ObjectType.Other, ChangeType.Unmodified)
+            return new DiffTreeNode($"{codeNode.Label} {codeNode.Source}", null, null, ObjectType.Other)
             {
                 //ChildNodes = GetDiffTree(codeNode.ChildNodes).ToList()
             };

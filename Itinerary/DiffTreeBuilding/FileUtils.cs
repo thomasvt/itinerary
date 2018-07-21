@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace Itinerary.DiffTreeBuidling
+namespace Itinerary.DiffTreeBuilding
 {
     public static class FileUtils
     {

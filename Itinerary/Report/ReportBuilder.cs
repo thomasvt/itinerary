@@ -10,7 +10,7 @@ namespace Itinerary.Report
 {
     public class ReportBuilder
     {
-        public static void BuildReport(DiffTree.DiffTree tree, string filename)
+        public static void BuildReport(DiffTreeNode root, string filename)
         {
             var doc = new HtmlDocument();
             var htmlNode = doc.DocumentNode.AppendChild(HtmlNode.CreateNode("<html>"));
@@ -19,7 +19,7 @@ namespace Itinerary.Report
                 "<link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.1.1/css/all.css\" integrity=\"sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ\" crossorigin=\"anonymous\">"));
             var bodyNode =
                 htmlNode.AppendChild(HtmlNode.CreateNode("<body style=\"font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;\">"));
-            AddNodesToHtmlDoc(tree.Nodes, bodyNode);
+            AddNodesToHtmlDoc(new [] { root }, bodyNode);
             doc.Save(File.Open(filename, FileMode.Create));
         }
 
@@ -30,7 +30,7 @@ namespace Itinerary.Report
             {
                 var objectTypeIcon = GetObjectTypeIcon(node);
                 var changeTypeIcon = GetChangeTypeIcon(node.ChangeType);
-                var name = HtmlDocument.HtmlEncode(node.Name);
+                var name = HtmlDocument.HtmlEncode(node.Name ?? "");
                 var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{changeTypeIcon}&nbsp; &nbsp;{objectTypeIcon} {name}</li>"));
                 if (node.ChildNodes.Any())
                 {

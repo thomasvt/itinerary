@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Itinerary.DiffTree;
 
-namespace Itinerary.DiffTreeBuidling
+namespace Itinerary.DiffTreeBuilding
 {
     public interface IFileContentComparer
     {
