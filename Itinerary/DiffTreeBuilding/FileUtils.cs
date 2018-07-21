@@ -9,6 +9,9 @@ namespace Itinerary.DiffTreeBuilding
     {
         public static bool FileContentsAreEqual(string fileA, string fileB)
         {
+            if (fileA == null || fileB == null)
+                return false;
+
             if (new FileInfo(fileA).Length != new FileInfo(fileB).Length)
                 return false;
             var checksumA = GetChecksum(fileA);

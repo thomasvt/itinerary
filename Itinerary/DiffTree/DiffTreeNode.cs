@@ -16,11 +16,15 @@ namespace Itinerary.DiffTree
             ChildNodes = new List<DiffTreeNode>();
         }
 
-        public string LeftFullName => Path.Combine(LeftParent, Name);
-        public string RightFullname => Path.Combine(RightParent, Name);
+        public string LeftFullPath => ChangeType == ChangeType.Added ? null : Path.Combine(LeftParent, Name);
+        public string RightFullPath => ChangeType == ChangeType.Removed ? null :  Path.Combine(RightParent, Name);
+        public string FullPath => LeftFullPath ?? RightFullPath;
+
         public string Name { get; }
+
         public string LeftParent { get; }
         public string RightParent { get; }
+
         public ObjectType ObjectType { get; }
         public IReadOnlyList<DiffTreeNode> ChildNodes { get; internal set; }
         public ChangeType ChangeType { get; internal set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Itinerary.Comparing;
 using Itinerary.DiffTree;
 using Itinerary.DiffTreeBuilding;
@@ -21,14 +22,16 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
 
         public void Expand(DiffTreeNode node)
         {
-            var leftTree = GetSemanticTree(Path.Combine(node.LeftParent, node.Name));
-            var rightTree = GetSemanticTree(Path.Combine(node.RightParent, node.Name));
+            var leftTree = GetSemanticTree(node.LeftFullPath);
+            var rightTree = GetSemanticTree(node.RightFullPath);
             node.ChildNodes = BuildCSharpTree(leftTree, rightTree).ToList();
         }
 
-        private static List<CodeNode> GetSemanticTree(string leftFilename)
+        private static List<CodeNode> GetSemanticTree(string filename)
         {
-            var root = CSharpSyntaxTree.ParseText(File.ReadAllText(leftFilename)).GetRoot();
+            if (filename == null)
+                return new List<CodeNode>(); // a file may not exist on one side if it's an Add or Remove
+            var root = CSharpSyntaxTree.ParseText(File.ReadAllText(filename)).GetRoot();
             return TreeExtracter.ExtractTreeOfInterest(new [] { root });
         }
         
@@ -48,7 +51,7 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
             {
                 if (leftNode is IdentifiableCodeNode leftDcn && rightNode is IdentifiableCodeNode rightDcn)
                     return leftDcn.Equals(rightDcn);
-                return string.Equals(leftNode?.Source, rightNode?.Source);
+                return string.Equals(RemoveWhiteSpace(leftNode?.Source), RemoveWhiteSpace(rightNode?.Source));
             }).ToList();
 
             foreach (var change in changes)
@@ -76,6 +79,31 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
                 list.Add(item);
             }
             return list;
+        }
+
+        private static string RemoveWhiteSpace(string source)
+        {
+            if (source == null)
+                return null;
+            var sb = new StringBuilder(source.Length);
+            var firstWhitespace = true;
+            for (var i = 0; i < source.Length; i++)
+            {
+                var ch = source[i];
+                if (ch == ' ' || ch == 13 || ch == 10 || ch == 9)
+                {
+                    if (firstWhitespace)
+                        sb.Append(' ');
+                    firstWhitespace = false;
+                }
+                else
+                {
+                    firstWhitespace = true;
+                    sb.Append(ch);
+                }
+            }
+
+            return sb.ToString();
         }
 
         public bool IsLeafExpander => true;

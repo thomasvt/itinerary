@@ -56,15 +56,10 @@ namespace Itinerary.DiffTreeNodeExpanders
             var changes = OrderedListComparer.Compare(leftFileList, rightFileList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
             foreach (var change in changes)
             {
-                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.File);
-                if (change.ChangeType == ChangeType.Unmodified)
+                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.File)
                 {
-                    node.ChangeType = FileUtils.FileContentsAreEqual(node.LeftFullName, node.RightFullname) ? ChangeType.Unmodified : ChangeType.Modified;
-                }
-                else
-                {
-                    node.ChangeType = change.ChangeType;
-                }
+                    ChangeType = change.ChangeType
+                };
                 nodes.Add(node);
             }
         }

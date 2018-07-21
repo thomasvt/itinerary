@@ -83,6 +83,7 @@ namespace Itinerary
             var diffTreeBuilder = new DiffTreeBuilder();
             diffTreeBuilder.RegisterNodeExpander(new DirectoryExpander { IgnoreFolders = CmdLnOptions.IgnoreFolders });
             diffTreeBuilder.RegisterNodeExpander(new CSharpFileExpander());
+            diffTreeBuilder.RegisterNodeExpander(new OtherFileExpander());
             return diffTreeBuilder;
         }
     }

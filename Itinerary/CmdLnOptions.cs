@@ -7,7 +7,7 @@ namespace Itinerary
 {
     public static class CmdLnOptions
     {
-        private static readonly string[] IgnoreFoldersDefault = { "bin", "obj", "packages", "properties" };
+        private static readonly string[] IgnoreFoldersDefault = { "bin", "obj", "packages", "properties", "testresults" };
 
         static CmdLnOptions()
         {
