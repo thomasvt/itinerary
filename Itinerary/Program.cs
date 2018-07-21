@@ -67,7 +67,7 @@ namespace Itinerary
         private static void BuildReportForFolderPair(string leftFolder, string rightFolder)
         {
             var diffTreeBuilder = CreateDiffTreeBuilder();
-            var root = new DiffTreeNode(".", leftFolder, rightFolder, ObjectType.Directory);
+            var root = new DiffTreeNode(".", leftFolder, rightFolder, NodeType.Directory);
             diffTreeBuilder.BuildTree(root);
             var filename = rightFolder + ".html";
             var reportBuilder = new ReportBuilder()

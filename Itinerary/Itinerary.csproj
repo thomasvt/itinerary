@@ -131,7 +131,7 @@
     <Compile Include="Comparing\ChangeType.cs" />
     <Compile Include="DiffTreeNodeExpanders\DirectoryExpander.cs" />
     <Compile Include="DiffTreeNodeExpanders\OtherFileExpander.cs" />
-    <Compile Include="DiffTree\ObjectType.cs" />
+    <Compile Include="DiffTree\NodeType.cs" />
     <Compile Include="DiffTreeBuilding\DiffTreeBuilder.cs" />
     <Compile Include="DiffTree\DiffTreeNode.cs" />
     <Compile Include="DiffTreeBuilding\FileUtils.cs" />

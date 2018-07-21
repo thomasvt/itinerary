@@ -17,7 +17,7 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
         
         public bool CanExpand(DiffTreeNode node)
         {
-            return node.ObjectType == ObjectType.File && Path.GetExtension(node.Name) == FileExtension;
+            return node.NodeType == NodeType.File && Path.GetExtension(node.Name) == FileExtension;
         }
 
         public void Expand(DiffTreeNode node)
@@ -66,7 +66,7 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
                     ? change.Item.Label
                     : $"{change.Item.Label}{Environment.NewLine}{change.Item.Source}";
 
-                var item = new DiffTreeNode(label, "", "", ObjectType.CodeConstruct)
+                var item = new DiffTreeNode(label, "", "", GetNodeType(change.Item.Kind))
                 {
                     ChangeType = change.ChangeType,
                     ChildNodes = childNodes
@@ -79,6 +79,25 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
                 list.Add(item);
             }
             return list;
+        }
+
+        private static NodeType GetNodeType(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.NamespaceDeclaration:
+                    return NodeType.Namespace;
+                case SyntaxKind.ClassDeclaration:
+                    return NodeType.Class;
+                case SyntaxKind.MethodDeclaration:
+                    return NodeType.Method;
+                case SyntaxKind.PropertyDeclaration:
+                    return NodeType.Property;
+                case SyntaxKind.FieldDeclaration:
+                    return NodeType.Field;
+                default:
+                    return NodeType.CSharp;
+            }
         }
 
         private static string RemoveWhiteSpace(string source)

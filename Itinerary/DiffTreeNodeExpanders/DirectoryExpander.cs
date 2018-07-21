@@ -18,7 +18,7 @@ namespace Itinerary.DiffTreeNodeExpanders
 
         public bool CanExpand(DiffTreeNode node)
         {
-            return node.ObjectType == ObjectType.Directory;
+            return node.NodeType == NodeType.Directory;
         }
 
         public void Expand(DiffTreeNode node)
@@ -41,7 +41,7 @@ namespace Itinerary.DiffTreeNodeExpanders
             var changes = OrderedListComparer.Compare(leftList, rightList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
             foreach (var change in changes)
             {
-                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.Directory)
+                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, NodeType.Directory)
                 {
                     ChangeType = change.ChangeType
                 };
@@ -56,7 +56,7 @@ namespace Itinerary.DiffTreeNodeExpanders
             var changes = OrderedListComparer.Compare(leftFileList, rightFileList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
             foreach (var change in changes)
             {
-                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.File)
+                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, NodeType.File)
                 {
                     ChangeType = change.ChangeType
                 };

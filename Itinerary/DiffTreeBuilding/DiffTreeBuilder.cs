@@ -43,7 +43,7 @@ namespace Itinerary.DiffTreeBuilding
                 Console.WriteLine($" RightParent: {node.RightParent}");
                 Console.WriteLine($" {e.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
-                node.ChildNodes = new List<DiffTreeNode> {new DiffTreeNode($"#err#{expander.GetType().Name}#{e.Message}#", null, null, ObjectType.Message)};
+                node.ChildNodes = new List<DiffTreeNode> {new DiffTreeNode($"#err#{expander.GetType().Name}#{e.Message}#", null, null, NodeType.Message)};
             }
 
             if (!expander.IsLeafExpander)

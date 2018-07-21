@@ -7,12 +7,12 @@ namespace Itinerary.DiffTree
 {
     public class DiffTreeNode
     {
-        public DiffTreeNode(string name, string leftParent, string rightParent, ObjectType objectType)
+        public DiffTreeNode(string name, string leftParent, string rightParent, NodeType nodeType)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             LeftParent = leftParent ?? throw new ArgumentNullException(nameof(leftParent));
             RightParent = rightParent ?? throw new ArgumentNullException(nameof(rightParent));
-            ObjectType = objectType;
+            NodeType = nodeType;
             ChildNodes = new List<DiffTreeNode>();
         }
 
@@ -25,7 +25,7 @@ namespace Itinerary.DiffTree
         public string LeftParent { get; }
         public string RightParent { get; }
 
-        public ObjectType ObjectType { get; }
+        public NodeType NodeType { get; }
         public IReadOnlyList<DiffTreeNode> ChildNodes { get; internal set; }
         public ChangeType ChangeType { get; internal set; }
     }

@@ -43,9 +43,29 @@ namespace Itinerary.Report
 
         private static string GetObjectTypeIcon(DiffTreeNode node)
         {
-            return node.ObjectType == ObjectType.Directory 
-                ? "<i class=\"fas fa-folder-open\" style=\"color: #F8D96E;\"></i>"
-                : "<i class=\"fas fa-file\" style=\"color: #909292;\"></i>";
+            switch (node.NodeType)
+            {
+                case NodeType.File:
+                    return "<i class=\"fas fa-file\" style=\"color: #909292;\"></i>";
+                case NodeType.Directory:
+                    return "<i class=\"fas fa-folder-open\" style=\"color: #D8AC6A;\"></i>";
+                case NodeType.Message:
+                    return "<i class=\"fas fa-comment\" style=\"color: #909292;\"></i>";
+                case NodeType.Namespace:
+                    return "<i class=\"fas fa-code\" style=\"color: #909292;\"></i>";
+                case NodeType.Class:
+                    return "<i class=\"fas fa-project-diagram\" style=\"color: #F8D96E;\"></i>";
+                case NodeType.Method:
+                    return "<i class=\"fas fa-cube\" style=\"color: #6C4A86;\"></i>";
+                case NodeType.Property:
+                    return "<i class=\"fas fa-wrench\" style=\"color: #909292;\"></i>";
+                case NodeType.Field:
+                    return "<i class=\"fas fa-inbox\" style=\"color: #4478A6;\"></i>";
+                case NodeType.CSharp:
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static string GetChangeTypeIcon(ChangeType changeType)

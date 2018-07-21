@@ -10,7 +10,7 @@ namespace Itinerary.DiffTreeNodeExpanders
     {
         public bool CanExpand(DiffTreeNode node)
         {
-            return node.ObjectType == ObjectType.File;
+            return node.NodeType == NodeType.File;
         }
 
         public bool IsLeafExpander => true;
