@@ -53,13 +53,13 @@ namespace Itinerary.Report
             switch (changeType)
             {
                 case ChangeType.Unmodified:
-                    return "<i class=\"fas fa-equals\" title=\"unmodified\"></i>";
+                    return "<i class=\"fas fa-equals\" style=\"font-size: 10;\" title=\"unmodified\"></i>";
                 case ChangeType.Modified:
-                    return "<i class=\"fas fa-not-equal\" style=\"color: #F9A825;\" title=\"modified\"></i>";
+                    return "<i class=\"fas fa-not-equal\" style=\"font-size: 10;color: #F9A825;\" title=\"modified\"></i>";
                 case ChangeType.Added:
-                    return "<i class=\"fas fa-asterisk\" style=\"color: #558B2F;\" title=\"added\"></i>";
+                    return "<i class=\"fas fa-asterisk\" style=\"font-size: 10;color: #558B2F;\" title=\"added\"></i>";
                 case ChangeType.Removed:
-                    return "<i class=\"fas fa-trash\" style=\"color: #c62828;\" title=\"removed\"></i>";
+                    return "<i class=\"fas fa-trash\" style=\"font-size: 10;color: #c62828;\" title=\"removed\"></i>";
             }
             return "?";
         }

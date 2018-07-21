@@ -17,14 +17,15 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
             foreach (var syntaxNode in syntaxNodes)
             {
 
-                var identifiers = GetUniqueIdentifiers(syntaxNode, parent); // is this something that has a unique identifier within current scope? a method, field, property?
+                var identifiers = GetUniqueIdentifiers(syntaxNode, parent).ToList(); // is this something that has a unique identifier within current scope? a method, field, property?
 
                 var kind = syntaxNode.Kind();
                 var source = syntaxNode.ToString();
 
-                var codeNode = identifiers.Any()
-                    ? new IdentifiableCodeNode(kind, identifiers, source)
-                    : new CodeNode(kind.ToString(), kind, source);
+                // having all CodeNodes try to be unique is actually better: even when duplicate items occur, the UnorderedListComparer will match them by order of appearance.
+                var codeNode = new IdentifiableCodeNode(kind, identifiers.Any()
+                    ? identifiers
+                    : new List<string> {kind.ToString()}, source);
 
                 var childNodes = ExtractTreeOfInterest(syntaxNode.ChildNodes().ToList(), codeNode);
                 codeNode.ChildNodes = childNodes;
@@ -34,14 +35,20 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
             return list;
         }
 
-        private static List<SyntaxKind> ParentsWithUniqueBlock = new List<SyntaxKind>()
+        private static readonly List<SyntaxKind> ParentsWithUniqueBlock = new List<SyntaxKind>()
         {
             SyntaxKind.ClassDeclaration,
             SyntaxKind.MethodDeclaration,
-            SyntaxKind.NamespaceDeclaration
+            SyntaxKind.NamespaceDeclaration,
+            SyntaxKind.ForEachStatement,
+            SyntaxKind.ForStatement,
+            SyntaxKind.WhileStatement,
+            SyntaxKind.DoStatement,
+            SyntaxKind.ParenthesizedExpression,
+            SyntaxKind.ParenthesizedLambdaExpression
         };
 
-        private static List<string> GetUniqueIdentifiers(SyntaxNode syntaxNode, CodeNode parent)
+        private static IEnumerable<string> GetUniqueIdentifiers(SyntaxNode syntaxNode, CodeNode parent)
         {
             if (syntaxNode == null)
                 return new List<string>();
@@ -49,32 +56,48 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
             switch (syntaxNode)
             {
                 case CompilationUnitSyntax compilationUnitSyntax:
-                    return new List<string> { compilationUnitSyntax.Language }; // compilation unit is a singleton, so allow it to be treated as such
+                    return new [] { compilationUnitSyntax.Language }; // compilation unit is a singleton, so allow it to be treated as such
                 case ClassDeclarationSyntax classDeclarationSyntax:
-                    return new List<string> { classDeclarationSyntax.Identifier.ToString() };
+                    return new[] { classDeclarationSyntax.Identifier.ToString() };
                 case StructDeclarationSyntax structDeclarationSyntax:
-                    return new List<string> { structDeclarationSyntax.Identifier.ToString() };
+                    return new[] { structDeclarationSyntax.Identifier.ToString() };
                 case EnumDeclarationSyntax enumDeclarationSyntax:
-                    return new List<string> { enumDeclarationSyntax.Identifier.ToString() };
+                    return new[] { enumDeclarationSyntax.Identifier.ToString() };
                 case EnumMemberDeclarationSyntax enumMemberDeclarationSyntax:
-                    return new List<string> { enumMemberDeclarationSyntax.Identifier.ToString() };
+                    return new[] { enumMemberDeclarationSyntax.Identifier.ToString() };
                 case EventDeclarationSyntax eventDeclarationSyntax:
-                    return new List<string> { eventDeclarationSyntax.Identifier.ToString() };
+                    return new[] { eventDeclarationSyntax.Identifier.ToString() };
                 case FieldDeclarationSyntax fieldDeclarationSyntax:
-                    return fieldDeclarationSyntax.Declaration.Variables.Select(v => v.Identifier.ToString()).ToList();
+                    return fieldDeclarationSyntax.Declaration.Variables.Select(v => v.Identifier.ToString());
                 case MethodDeclarationSyntax methodDeclarationSyntax:
-                    return new List<string> { methodDeclarationSyntax.Identifier.ToString() };
+                    return new[] { methodDeclarationSyntax.Identifier.ToString() };
                 case NamespaceDeclarationSyntax namespaceDeclarationSyntax:
-                    return new List<string> { namespaceDeclarationSyntax.Name.ToString() };
+                    return new[] { namespaceDeclarationSyntax.Name.ToString() };
                 case OperatorDeclarationSyntax operatorDeclarationSyntax:
-                    return new List<string> { operatorDeclarationSyntax.OperatorToken.ToString() };
+                    return new[] { operatorDeclarationSyntax.OperatorToken.ToString() };
                 case PropertyDeclarationSyntax propertyDeclarationSyntax:
-                    return new List<string> { propertyDeclarationSyntax.Identifier.ToString() };
+                    return new[] { propertyDeclarationSyntax.Identifier.ToString() };
                 case EventFieldDeclarationSyntax eventFieldDeclarationSyntax:
-                    return eventFieldDeclarationSyntax.Declaration.Variables.Select(v => v.Identifier.ToString()).ToList();
-                case BlockSyntax blockSyntax:
+                    return eventFieldDeclarationSyntax.Declaration.Variables.Select(v => v.Identifier.ToString());
+                case ParameterSyntax parameterSyntax:
+                    return new[] { parameterSyntax.Identifier.ToString()};
+                case LocalDeclarationStatementSyntax localDeclarationStatementSyntax:
+                    return localDeclarationStatementSyntax.Declaration.Variables.Select(v => v.Identifier.ToString());
+                case VariableDeclarationSyntax variableDeclarationSyntax:
+                    return variableDeclarationSyntax.Variables.Select(v => v.Identifier.ToString());
+                case VariableDeclaratorSyntax variableDeclaratorSyntax:
+                    return new[] { variableDeclaratorSyntax.Identifier.ToString()};
+                case SwitchStatementSyntax switchStatementSyntax:
+                    return new[] { switchStatementSyntax.Expression.ToString()};
+                case SwitchSectionSyntax switchSectionSyntax:
+                    return switchSectionSyntax.Labels.Select(l => l.ToString());
+                case BlockSyntax blockSyntax: 
                     if (ParentsWithUniqueBlock.Contains(parent.Kind))
-                        return new List<string> { "Body" }; // make block unique so the diff thinks it's a modify instead of an add+remove
+                        return new[] { "Body" }; // make block unique so the diff thinks it's a modify instead of an add+remove
+                    break;
+                case ParameterListSyntax parameterListSyntax:
+                    if (ParentsWithUniqueBlock.Contains(parent.Kind))
+                        return new[] { "Parameters" }; // make block unique so the diff thinks it's a modify instead of an add+remove
                     break;
             }
             return new List<string>();

@@ -64,7 +64,7 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
 
                 var label = childNodes.Any()
                     ? change.Item.Label
-                    : $"{change.Item.Label} {change.Item.Source}";
+                    : $"{change.Item.Label}{Environment.NewLine}{change.Item.Source}";
 
                 var item = new DiffTreeNode(label, "", "", ObjectType.CodeConstruct)
                 {
