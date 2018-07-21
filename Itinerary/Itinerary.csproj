@@ -119,11 +119,14 @@
   <ItemGroup>
     <Compile Include="CmdLnException.cs" />
     <Compile Include="CmdLnOptions.cs" />
-    <Compile Include="CSharp\CodeDeclarationNode.cs" />
+    <Compile Include="Comparing\Change.cs" />
+    <Compile Include="Comparing\Comparer.cs" />
+    <Compile Include="CSharp\DeclarationCodeNode.cs" />
     <Compile Include="CSharp\CSharpFileContentComparer.cs" />
     <Compile Include="CSharp\CodeNode.cs" />
+    <Compile Include="CSharp\TreeExtracter.cs" />
     <Compile Include="DiffTreeBuidling\IFileContentComparer.cs" />
-    <Compile Include="DiffTree\ChangeType.cs" />
+    <Compile Include="Comparing\ChangeType.cs" />
     <Compile Include="DiffTree\ObjectType.cs" />
     <Compile Include="DiffTreeBuidling\DiffTreeBuilder.cs" />
     <Compile Include="DiffTree\DiffTreeNode.cs" />

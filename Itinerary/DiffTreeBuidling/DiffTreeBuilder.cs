@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Itinerary.Comparing;
 using Itinerary.DiffTree;
 
 namespace Itinerary.DiffTreeBuidling
@@ -39,50 +40,63 @@ namespace Itinerary.DiffTreeBuidling
         {
             var leftList = leftFolder != null ? GetSubFolders(leftFolder) : new List<string>();
             var rightList = rightFolder != null ? GetSubFolders(rightFolder) : new List<string>();
-            TwoWayCompare(leftList, rightList,
-                remainedFolder =>
+            var changes = Comparer.CompareSortedLists(leftList, rightList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
+            foreach (var change in changes)
+            {
+                DiffTreeNode node;
+                switch (change.ChangeType)
                 {
-                    var childNodes = GetNodesForFolderPair(Path.Combine(leftFolder, remainedFolder), Path.Combine(rightFolder, remainedFolder));
-                    var changeType = childNodes.Any(n => n.ChangeType != ChangeType.Unmodified)
-                        ? ChangeType.Modified
-                        : ChangeType.Unmodified;
-                    var node = new DiffTreeNode(remainedFolder, ObjectType.Directory, changeType)
-                    {
-                        ChildNodes = childNodes.AsReadOnly()
-                    };
-                    nodes.Add(node);
-                },
-                removedFolder =>
-                {
-                    var node = new DiffTreeNode(removedFolder, ObjectType.Directory, ChangeType.Removed);
-                    nodes.Add(node);
-                    node.ChildNodes = GetNodesForFolderPair(Path.Combine(leftFolder, removedFolder), null);
-                },
-                addedFolder =>
-                {
-                    var node = new DiffTreeNode(addedFolder, ObjectType.Directory, ChangeType.Added);
-                    nodes.Add(node);
-                    node.ChildNodes = GetNodesForFolderPair(null, Path.Combine(rightFolder, addedFolder));
-                });
+                    case ChangeType.Unmodified:
+                        var childNodes = GetNodesForFolderPair(Path.Combine(leftFolder, change.Item), Path.Combine(rightFolder, change.Item));
+                        var changeType = childNodes.Any(n => n.ChangeType != ChangeType.Unmodified)
+                            ? ChangeType.Modified
+                            : ChangeType.Unmodified;
+                        node = new DiffTreeNode(change.Item, ObjectType.Directory, changeType)
+                        {
+                            ChildNodes = childNodes.AsReadOnly()
+                        };
+                        nodes.Add(node);
+                        break;
+                    case ChangeType.Removed:
+                        node = new DiffTreeNode(change.Item, ObjectType.Directory, ChangeType.Removed);
+                        nodes.Add(node);
+                        node.ChildNodes = GetNodesForFolderPair(Path.Combine(leftFolder, change.Item), null);
+                        break;
+                    case ChangeType.Added:
+                        node = new DiffTreeNode(change.Item, ObjectType.Directory, ChangeType.Added);
+                        nodes.Add(node);
+                        node.ChildNodes = GetNodesForFolderPair(null, Path.Combine(rightFolder, change.Item));
+                        break;
+                }
+            }
         }
 
         private void AddFileNodes(string leftFolder, string rightFolder, List<DiffTreeNode> nodes)
         {
             var leftFileList = leftFolder != null ? GetFiles(leftFolder) : new List<string>();
             var rightFileList = rightFolder != null ? GetFiles(rightFolder) : new List<string>();
-            TwoWayCompare(leftFileList, rightFileList,
-                remainedFile =>
+            var changes = Comparer.CompareSortedLists(leftFileList, rightFileList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
+            foreach (var change in changes)
+            {
+                switch (change.ChangeType)
                 {
-                    var leftFullFileName = Path.Combine(leftFolder, remainedFile);
-                    var rightFullFilename = Path.Combine(rightFolder, remainedFile);
-                    var areEqual = FileUtils.FileContentsAreEqual(leftFullFileName, rightFullFilename);
-                    var node = new DiffTreeNode(remainedFile, ObjectType.File, areEqual ? ChangeType.Unmodified : ChangeType.Modified);
-                    nodes.Add(node);
-                    node.ChildNodes = GetNodesForFileContent(leftFullFileName, rightFullFilename);
-                },
-                removedFile => nodes.Add(new DiffTreeNode(removedFile, ObjectType.File, ChangeType.Removed)),
-                addedFile => nodes.Add(new DiffTreeNode(addedFile, ObjectType.File, ChangeType.Added))
-            );
+                    case ChangeType.Unmodified:
+                        var leftFullFileName = Path.Combine(leftFolder, change.Item);
+                        var rightFullFilename = Path.Combine(rightFolder, change.Item);
+                        var areEqual = FileUtils.FileContentsAreEqual(leftFullFileName, rightFullFilename);
+                        var node = new DiffTreeNode(change.Item, ObjectType.File,
+                            areEqual ? ChangeType.Unmodified : ChangeType.Modified);
+                        nodes.Add(node);
+                        node.ChildNodes = GetNodesForFileContent(leftFullFileName, rightFullFilename);
+                        break;
+                    case ChangeType.Removed:
+                        nodes.Add(new DiffTreeNode(change.Item, ObjectType.File, ChangeType.Removed));
+                        break;
+                    case ChangeType.Added:
+                        nodes.Add(new DiffTreeNode(change.Item, ObjectType.File, ChangeType.Added));
+                        break;
+                }
+            }
         }
 
         private IReadOnlyList<DiffTreeNode> GetNodesForFileContent(string leftFileName, string rightFilename)
@@ -107,39 +121,6 @@ namespace Itinerary.DiffTreeBuidling
                 }
             }
             return new List<DiffTreeNode>();
-        }
-
-        /// <summary>
-        /// Finds the operations that occurred to transform leftList into rightList: remove, add and remain.
-        /// The corresponding callbacks are called as these operations are encounteres from top to bottom of the lists.
-        /// </summary>
-        private static void TwoWayCompare(List<string> leftList, List<string> rightList, Action<string> remainAction, Action<string> removeAction, Action<string> addAction)
-        {
-            var leftIndex = 0;
-            var rightIndex = 0;
-            while (leftIndex < leftList.Count || rightIndex < rightList.Count)
-            {
-                var left = leftIndex >= leftList.Count ? null : leftList[leftIndex];
-                var right = rightIndex >= rightList.Count ? null : rightList[rightIndex];
-                var compareResult = String.Compare(left, right, StringComparison.InvariantCultureIgnoreCase);
-
-                if (compareResult == 0)
-                {
-                    remainAction(left);
-                    leftIndex++;
-                    rightIndex++;
-                }
-                else if (compareResult == -1 && left != null || right == null)
-                {
-                    removeAction(left);
-                    leftIndex++;
-                }
-                else
-                {
-                    addAction(right);
-                    rightIndex++;
-                }
-            }
         }
 
         private List<string> GetSubFolders(string rootFolder)

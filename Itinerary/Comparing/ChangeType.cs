@@ -1,4 +1,4 @@
-﻿namespace Itinerary.DiffTree
+﻿namespace Itinerary.Comparing
 {
     public enum ChangeType
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HtmlAgilityPack;
+using Itinerary.Comparing;
 using Itinerary.DiffTree;
 
 namespace Itinerary.Report
@@ -29,7 +30,8 @@ namespace Itinerary.Report
             {
                 var objectTypeIcon = GetObjectTypeIcon(node);
                 var changeTypeIcon = GetChangeTypeIcon(node.ChangeType);
-                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{changeTypeIcon}&nbsp; &nbsp;{objectTypeIcon} {node.Name.Replace(Environment.NewLine, "<br/>")}</li>"));
+                var name = HtmlDocument.HtmlEncode(node.Name);
+                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{changeTypeIcon}&nbsp; &nbsp;{objectTypeIcon} {name}</li>"));
                 if (node.ChildNodes.Any())
                 {
                     AddNodesToHtmlDoc(node.ChildNodes, liNode);

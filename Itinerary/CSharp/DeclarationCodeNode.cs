@@ -3,10 +3,10 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Itinerary.CSharp
 {
-    public class CodeDeclarationNode
+    public class DeclarationCodeNode
     : CodeNode
     {
-        public CodeDeclarationNode(SyntaxKind kind, List<string> identifiers, string source) : base(kind, source)
+        public DeclarationCodeNode(SyntaxKind kind, List<string> identifiers, string source) : base($"{kind} {string.Join(", ", identifiers)}", kind, source)
         {
             Identifiers = identifiers;
         }
