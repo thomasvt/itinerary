@@ -10,7 +10,7 @@ namespace Itinerary.Report
 {
     public class ReportBuilder
     {
-        public static void BuildReport(DiffTreeNode root, string filename)
+        public void BuildReport(DiffTreeNode root, string filename)
         {
             var doc = new HtmlDocument();
             var htmlNode = doc.DocumentNode.AppendChild(HtmlNode.CreateNode("<html>"));
@@ -23,9 +23,11 @@ namespace Itinerary.Report
             doc.Save(File.Open(filename, FileMode.Create));
         }
 
-        private static void AddNodesToHtmlDoc(IEnumerable<DiffTreeNode> nodes, HtmlNode parentNode)
+        private void AddNodesToHtmlDoc(IEnumerable<DiffTreeNode> nodes, HtmlNode parentNode)
         {
             var ulNode = parentNode.AppendChild(HtmlNode.CreateNode("<ul style=\"list-style-type: none; -webkit-padding-start: 20px;\">"));
+            if (!ShowAll)
+                nodes = nodes.Where(n => n.ChangeType != ChangeType.Unmodified);
             foreach (var node in nodes)
             {
                 var objectTypeIcon = GetObjectTypeIcon(node);
@@ -61,5 +63,7 @@ namespace Itinerary.Report
             }
             return "?";
         }
+
+        public bool ShowAll { get; set; }
     }
 }

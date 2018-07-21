@@ -42,7 +42,7 @@ namespace Itinerary
         private static void ParseOptions(string[] args)
         {
             var options = args.Where(a => a.StartsWith("-")).ToList();
-            ParseOption(options, "-a", o => ChangesOnly = true);
+            ParseOption(options, "-a", o => ShowAll = true);
             ParseOption(options, "-h", o => Help = true);
             ParseOption(options, "-i=", 
                 o => IgnoreFolders.AddRange(o.Substring(3).Split(',')),
@@ -100,13 +100,13 @@ namespace Itinerary
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("-h           Shows this help text");
-            Console.WriteLine("-a           List all objects (instead of only the changed ones)");
+            Console.WriteLine("-a           List all objects (unmodifieds too)");
             Console.WriteLine("-i=a,b,...   Ignore list for folders");
             Console.WriteLine("             Default: -i=" + string.Join(",", IgnoreFoldersDefault));
         }
 
         public static bool Help { get; private set; }
-        public static bool ChangesOnly { get; private set; }
+        public static bool ShowAll { get; private set; }
         public static List<string> Paths { get; private set; }
         public static List<string> IgnoreFolders { get; }
     }

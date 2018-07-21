@@ -70,7 +70,11 @@ namespace Itinerary
             var root = new DiffTreeNode(".", leftFolder, rightFolder, ObjectType.Directory);
             diffTreeBuilder.BuildTree(root);
             var filename = rightFolder + ".html";
-            ReportBuilder.BuildReport(root, filename);
+            var reportBuilder = new ReportBuilder()
+            {
+                ShowAll = CmdLnOptions.ShowAll
+            };
+            reportBuilder.BuildReport(root, filename);
             Console.WriteLine("Created " + filename);
         }
 
