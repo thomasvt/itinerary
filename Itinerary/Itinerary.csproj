@@ -119,9 +119,8 @@
   <ItemGroup>
     <Compile Include="CmdLnException.cs" />
     <Compile Include="CmdLnOptions.cs" />
+    <Compile Include="CSharp\CodeDeclarationNode.cs" />
     <Compile Include="CSharp\CSharpFileContentComparer.cs" />
-    <Compile Include="CSharp\ICSharpNode.cs" />
-    <Compile Include="CSharp\NamespaceNode.cs" />
     <Compile Include="CSharp\CodeNode.cs" />
     <Compile Include="DiffTreeBuidling\IFileContentComparer.cs" />
     <Compile Include="DiffTree\ChangeType.cs" />

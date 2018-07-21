@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Itinerary.CSharp
 {
     public class CodeNode
     {
-        public CodeNode(string label)
+        public CodeNode(SyntaxKind kind, string source)
         {
-            Label = label;
+            Kind = kind;
+            Source = source;
             ChildNodes = new List<CodeNode>();
         }
 
-        public string Label { get; }
+        public SyntaxKind Kind { get; }
+        public string Source { get; }
         public List<CodeNode> ChildNodes { get; set; }
     }
 }

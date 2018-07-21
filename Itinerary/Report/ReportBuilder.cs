@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HtmlAgilityPack;
@@ -28,7 +29,7 @@ namespace Itinerary.Report
             {
                 var objectTypeIcon = GetObjectTypeIcon(node);
                 var changeTypeIcon = GetChangeTypeIcon(node.ChangeType);
-                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{GetChangeTypeIcon(node.ChangeType)}&nbsp; &nbsp;{objectTypeIcon} {node.Name}</li>"));
+                var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{changeTypeIcon}&nbsp; &nbsp;{objectTypeIcon} {node.Name.Replace(Environment.NewLine, "<br/>")}</li>"));
                 if (node.ChildNodes.Any())
                 {
                     AddNodesToHtmlDoc(node.ChildNodes, liNode);
