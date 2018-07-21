@@ -30,7 +30,7 @@ namespace Itinerary.Report
             {
                 var objectTypeIcon = GetObjectTypeIcon(node);
                 var changeTypeIcon = GetChangeTypeIcon(node.ChangeType);
-                var name = HtmlDocument.HtmlEncode(node.Name ?? "");
+                var name = HtmlDocument.HtmlEncode(node.Name).Replace(" ", "&nbsp;").Replace(Environment.NewLine, "<br/>"); // spaces and newlines are not encoded :S
                 var liNode = ulNode.AppendChild(HtmlNode.CreateNode($"<li>{changeTypeIcon}&nbsp; &nbsp;{objectTypeIcon} {name}</li>"));
                 if (node.ChildNodes.Any())
                 {

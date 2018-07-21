@@ -5,6 +5,6 @@
         File,
         Directory,
         Message,
-        Other
+        CodeConstruct
     }
 }

@@ -120,8 +120,9 @@
     <Compile Include="CmdLnException.cs" />
     <Compile Include="CmdLnOptions.cs" />
     <Compile Include="Comparing\Change.cs" />
-    <Compile Include="Comparing\Comparer.cs" />
-    <Compile Include="DiffTreeNodeExpanders\CSharp\DeclarationCodeNode.cs" />
+    <Compile Include="Comparing\OrderedListComparer.cs" />
+    <Compile Include="Comparing\UnorderedListComparer.cs" />
+    <Compile Include="DiffTreeNodeExpanders\CSharp\IdentifiableCodeNode.cs" />
     <Compile Include="DiffTreeNodeExpanders\CSharp\CSharpFileExpander.cs" />
     <Compile Include="DiffTreeNodeExpanders\CSharp\CodeNode.cs" />
     <Compile Include="DiffTreeNodeExpanders\CSharp\TreeExtracter.cs" />

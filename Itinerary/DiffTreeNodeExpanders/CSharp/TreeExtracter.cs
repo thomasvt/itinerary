@@ -19,22 +19,15 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
                 var childNodes = ExtractTreeOfInterest(syntaxNode.ChildNodes().ToList());
 
                 var identifiers = GetUniqueIdentifiers(syntaxNode); // is this something that has a unique identifier within current scope? a method, field, property?
-                var isNodeOfInterest = IsNodeOfInterest(syntaxNode);
 
                 var kind = syntaxNode.Kind();
                 var source = syntaxNode.ToString();
-                //if (isNodeOfInterest || identifiers.Any())
-                //{
-                    var codeNode = identifiers.Any()
-                        ? new DeclarationCodeNode(kind, identifiers, source)
-                        : new CodeNode(kind.ToString(), kind, source);
-                    codeNode.ChildNodes = childNodes;
-                    list.Add(codeNode);
-                //}
-                //else
-                //{
-                //    list.AddRange(childNodes);
-                //}
+
+                var codeNode = identifiers.Any()
+                    ? new IdentifiableCodeNode(kind, identifiers, source)
+                    : new CodeNode(kind.ToString(), kind, source);
+                codeNode.ChildNodes = childNodes;
+                list.Add(codeNode);
             }
 
             return list;
@@ -47,10 +40,12 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
 
             switch (syntaxNode)
             {
+                case CompilationUnitSyntax compilationUnitSyntax:
+                    return new List<string> { compilationUnitSyntax.Language }; // compilation unit is a singleton, so allow it to be treated as such
                 case ClassDeclarationSyntax classDeclarationSyntax:
                     return new List<string> { classDeclarationSyntax.Identifier.ToString() };
                 case StructDeclarationSyntax structDeclarationSyntax:
-                    return new List<string> {structDeclarationSyntax.Identifier.ToString()};
+                    return new List<string> { structDeclarationSyntax.Identifier.ToString() };
                 case EnumDeclarationSyntax enumDeclarationSyntax:
                     return new List<string> { enumDeclarationSyntax.Identifier.ToString() };
                 case EnumMemberDeclarationSyntax enumMemberDeclarationSyntax:
@@ -71,29 +66,6 @@ namespace Itinerary.DiffTreeNodeExpanders.CSharp
                     return eventFieldDeclarationSyntax.Declaration.Variables.Select(v => v.Identifier.ToString()).ToList();
             }
             return new List<string>();
-        }
-
-        private static readonly List<SyntaxKind> KindsOfInterest = new List<SyntaxKind>()
-        {
-            SyntaxKind.CompilationUnit,
-            SyntaxKind.UsingDirective,
-            SyntaxKind.ForEachStatement,
-            SyntaxKind.ForStatement,
-            SyntaxKind.ExpressionStatement,
-            SyntaxKind.WhileStatement,
-            SyntaxKind.DoStatement,
-            SyntaxKind.SwitchStatement,
-            SyntaxKind.IfStatement,
-            SyntaxKind.ElseClause,
-            SyntaxKind.EventDeclaration,
-            SyntaxKind.CaseKeyword
-        };
-
-        private static bool IsNodeOfInterest(SyntaxNode syntaxNode)
-        {
-            if (syntaxNode == null)
-                return false;
-            return KindsOfInterest.Contains(syntaxNode.Kind());
         }
     }
 }

@@ -38,10 +38,10 @@ namespace Itinerary.DiffTreeNodeExpanders
         {
             var leftList = leftFolder != null ? GetSubFolders(leftFolder) : new List<string>();
             var rightList = rightFolder != null ? GetSubFolders(rightFolder) : new List<string>();
-            var changes = Comparer.CompareSortedLists(leftList, rightList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
+            var changes = OrderedListComparer.Compare(leftList, rightList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
             foreach (var change in changes)
             {
-                var node = new DiffTreeNode(change.Item, leftFolder, rightFolder, ObjectType.Directory)
+                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.Directory)
                 {
                     ChangeType = change.ChangeType
                 };
@@ -53,34 +53,19 @@ namespace Itinerary.DiffTreeNodeExpanders
         {
             var leftFileList = leftFolder != null ? GetFiles(leftFolder) : new List<string>();
             var rightFileList = rightFolder != null ? GetFiles(rightFolder) : new List<string>();
-            var changes = Comparer.CompareSortedLists(leftFileList, rightFileList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
+            var changes = OrderedListComparer.Compare(leftFileList, rightFileList, (left, right) => string.Compare(left, right, StringComparison.InvariantCultureIgnoreCase));
             foreach (var change in changes)
             {
-                switch (change.ChangeType)
+                var node = new DiffTreeNode(change.LeftItem ?? change.RightItem, leftFolder, rightFolder, ObjectType.File);
+                if (change.ChangeType == ChangeType.Unmodified)
                 {
-                    case ChangeType.Unmodified:
-                        var leftFullFileName = Path.Combine(leftFolder, change.Item);
-                        var rightFullFilename = Path.Combine(rightFolder, change.Item);
-                        var areEqual = FileUtils.FileContentsAreEqual(leftFullFileName, rightFullFilename);
-                        var node = new DiffTreeNode(change.Item, leftFolder, rightFolder, ObjectType.File)
-                        {
-                            ChangeType = areEqual ? ChangeType.Unmodified : ChangeType.Modified
-                        };
-                        nodes.Add(node);
-                        break;
-                    case ChangeType.Removed:
-                        nodes.Add(new DiffTreeNode(change.Item, leftFolder, rightFolder, ObjectType.File)
-                        {
-                            ChangeType = ChangeType.Removed
-                        });
-                        break;
-                    case ChangeType.Added:
-                        nodes.Add(new DiffTreeNode(change.Item, leftFolder, rightFolder, ObjectType.File)
-                        {
-                            ChangeType = ChangeType.Added
-                        });
-                        break;
+                    node.ChangeType = FileUtils.FileContentsAreEqual(node.LeftFullName, node.RightFullname) ? ChangeType.Unmodified : ChangeType.Modified;
                 }
+                else
+                {
+                    node.ChangeType = change.ChangeType;
+                }
+                nodes.Add(node);
             }
         }
 
@@ -102,7 +87,7 @@ namespace Itinerary.DiffTreeNodeExpanders
                 .OrderBy(n => n, StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
         }
-        
+
         public bool IsLeafExpander => false;
         public List<string> IgnoreFolders { get; set; }
     }

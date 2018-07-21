@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinerary.Comparing;
 using Itinerary.DiffTree;
 
 namespace Itinerary.DiffTreeBuilding
@@ -45,12 +46,18 @@ namespace Itinerary.DiffTreeBuilding
                 node.ChildNodes = new List<DiffTreeNode> {new DiffTreeNode($"#err#{expander.GetType().Name}#{e.Message}#", null, null, ObjectType.Message)};
             }
 
-            if (expander.IsLeafExpander) return;
-
-            foreach (var childNode in node.ChildNodes)
+            if (!expander.IsLeafExpander)
             {
-                ExpandNode(childNode);
+                foreach (var childNode in node.ChildNodes)
+                {
+                    ExpandNode(childNode);
+                }
             }
+
+            if (node.ChangeType == ChangeType.Unmodified && node.ChildNodes.Any(cn => cn.ChangeType != ChangeType.Unmodified))
+            {
+                node.ChangeType = ChangeType.Modified;
+            } 
         }
 
         public void RegisterNodeExpander(IDiffTreeNodeExpander nodeExpander)

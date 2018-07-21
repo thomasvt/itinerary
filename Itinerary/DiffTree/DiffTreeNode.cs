@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Itinerary.Comparing;
 
 namespace Itinerary.DiffTree
@@ -7,13 +9,15 @@ namespace Itinerary.DiffTree
     {
         public DiffTreeNode(string name, string leftParent, string rightParent, ObjectType objectType)
         {
-            Name = name;
-            LeftParent = leftParent;
-            RightParent = rightParent;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            LeftParent = leftParent ?? throw new ArgumentNullException(nameof(leftParent));
+            RightParent = rightParent ?? throw new ArgumentNullException(nameof(rightParent));
             ObjectType = objectType;
             ChildNodes = new List<DiffTreeNode>();
         }
 
+        public string LeftFullName => Path.Combine(LeftParent, Name);
+        public string RightFullname => Path.Combine(RightParent, Name);
         public string Name { get; }
         public string LeftParent { get; }
         public string RightParent { get; }

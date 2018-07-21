@@ -3,13 +3,16 @@
     public struct Change<T>
     where T : class
     {
-        public Change(T item, ChangeType changeType)
+        public Change(T leftItem, T rightItem, ChangeType changeType)
         {
-            Item = item;
+            LeftItem = leftItem;
+            RightItem = rightItem;
             ChangeType = changeType;
         }
 
-        public T Item { get; }
+        public T LeftItem { get; }
+        public T RightItem { get; }
+        public T Item => ChangeType == ChangeType.Added ? RightItem : LeftItem;
         public ChangeType ChangeType { get; }
     }
 }
