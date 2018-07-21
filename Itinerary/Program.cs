@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Itinerary.CSharp;
 using Itinerary.DiffTree;
 using Itinerary.DiffTreeBuilding;
 using Itinerary.DiffTreeNodeExpanders;
+using Itinerary.DiffTreeNodeExpanders.CSharp;
 using Itinerary.Report;
 
 namespace Itinerary

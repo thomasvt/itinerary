@@ -102,7 +102,8 @@ namespace Itinerary.DiffTreeNodeExpanders
                 .OrderBy(n => n, StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
         }
-
+        
+        public bool IsLeafExpander => false;
         public List<string> IgnoreFolders { get; set; }
     }
 }

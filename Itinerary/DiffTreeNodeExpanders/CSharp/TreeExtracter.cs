@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Itinerary.CSharp
+namespace Itinerary.DiffTreeNodeExpanders.CSharp
 {
     public static class TreeExtracter
     {

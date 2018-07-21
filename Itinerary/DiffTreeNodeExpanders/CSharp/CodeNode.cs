@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Itinerary.CSharp
+namespace Itinerary.DiffTreeNodeExpanders.CSharp
 {
     public class CodeNode
     {

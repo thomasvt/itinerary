@@ -20,24 +20,18 @@ namespace Itinerary.DiffTreeBuilding
         /// </summary>
         public void BuildTree(DiffTreeNode rootNode)
         {
-            ExpandNodeAndChildren(rootNode);
-        }
-
-        private void ExpandNodeAndChildren(DiffTreeNode rootNode)
-        {
             ExpandNode(rootNode);
-            foreach (var childNode in rootNode.ChildNodes)
-            {
-                ExpandNodeAndChildren(childNode);
-            }
         }
 
         private void ExpandNode(DiffTreeNode node)
         {
             var expander = _expanders.FirstOrDefault(e => e.CanExpand(node));
+            if (expander == null)
+                return;
+
             try
             {
-                expander?.Expand(node);
+                expander.Expand(node);
             }
             catch (Exception e)
             {
@@ -49,6 +43,13 @@ namespace Itinerary.DiffTreeBuilding
                 Console.WriteLine($" {e.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
                 node.ChildNodes = new List<DiffTreeNode> {new DiffTreeNode($"#err#{expander.GetType().Name}#{e.Message}#", null, null, ObjectType.Message)};
+            }
+
+            if (expander.IsLeafExpander) return;
+
+            foreach (var childNode in node.ChildNodes)
+            {
+                ExpandNode(childNode);
             }
         }
 
