@@ -18,4 +18,8 @@ For each folder pair, Itinerary walks the directory-tree and finds added and rem
 
 ## Itinerary is just a generic tree comparer with fancy tree walking
 
-Most data comes in trees: folders, C# code, project files, solution files, ... all hierarchical data. Itinerary is therefore just a generic tree walker: it starts by making a node for the root folder, and then starts expanding nodes into subnodes. The Expander is chosen based on the node type: DirectoryNodes get a DirectoryExpander, CSharpFileNodes get a CSharpExpander, etc. This way, we get just one big tree containing everything we find. We can then use the tree to compare it to a similar tree (another version) and find out what has changed.
+Most data comes in trees: folders, C# code, project files, solution files, ... this is all just hierarchical data. Itinerary is therefore just a generic tree walker: it starts by making a node for the root folder and then starts expanding nodes into subnodes. The logic that performs this expansion is called an Expander, and they are chosen based on the Node's type: DirectoryNodes get a DirectoryExpander that understands the filesystem, CSharpFileNodes get a CSharpExpander that understands C#, etc. 
+
+This way, we get just one big tree containing everything we find. We can then simply compare the generic tree with a similar tree (another version) and find out what has changed.
+
+Using this generic approach, it now is easy to extend what can be compared. I intend to add csproj and sln Expanders.
