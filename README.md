@@ -16,6 +16,6 @@ Itinerary is a commandline tool that accepts either a list of folders to compare
 
 For each folder pair, Itinerary walks the directory-tree and finds added and removed files. It also jumps into files to find changes there. The changes are currently stored in an HTML report for debugging purposes, but obviously that will change. The point is that changes are detected.
 
-## Itinerary is just a generic tree comparer
+## Itinerary is just a generic tree comparer with fancy tree walking
 
 Most data comes in trees: folders, C# code, project files, solution files, ... all hierarchical data. Itinerary is therefore just a generic tree walker: it starts by making a node for the root folder, and then starts expanding nodes into subnodes. The Expander is chosen based on the node type: DirectoryNodes get a DirectoryExpander, CSharpFileNodes get a CSharpExpander, etc. This way, we get just one big tree containing everything we find. We can then use the tree to compare it to a similar tree (another version) and find out what has changed.
